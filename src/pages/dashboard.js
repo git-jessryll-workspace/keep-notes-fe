@@ -12,7 +12,6 @@ const Dashboard = () => {
             </Head>
 
             <div className="p-6">
-                
                 <Notes/>
             </div>
         </AppLayout>

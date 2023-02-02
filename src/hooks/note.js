@@ -43,10 +43,35 @@ export const useNote = () => {
         return await axios.delete(`/api/tags/${props.id}`)
     }
 
+    const createFolder = async ({...props}) => {
+        return await axios.post('/api/folders', props);
+    }
+
+    const updateFolder = async ({...props}) => {
+        return await axios.put(`/api/folders/${props.id}`, props);
+    }
+
+    const deleteFolder = async ({...props}) => {
+        return await axios.delete(`/api/folders/${props.id}`);
+    }
+
+    const addFolderNote = async ({...props}) => {
+        return await axios.post('/api/folder-notes', props);
+    }
+
+    const deleteFolderNote = async ({...props}) => {
+        return await axios.delete(`/api/folder-notes/${props.id}`);
+    }
+
     return {
         createNote,
         updateNote,
         addNoteTag,
-        removeNoteTag
+        removeNoteTag,
+        createFolder,
+        updateFolder,
+        deleteFolder,
+        addFolderNote,
+        deleteFolder
     }
 }

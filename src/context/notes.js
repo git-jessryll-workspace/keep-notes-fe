@@ -1,4 +1,11 @@
-import { SET_NOTE_DATA, SET_NOTE_LIST, SET_TAG_LIST } from '@/utils/constant'
+import {
+    ADD_FOLDER,
+    SET_FOLDER_LIST,
+    SET_NOTE_DATA,
+    SET_NOTE_LIST,
+    SET_TAG_LIST,
+    UPDATE_NOTE_LIST,
+} from '@/utils/constant'
 import { createContext, useReducer } from 'react'
 
 const NoteContext = createContext()
@@ -7,6 +14,7 @@ const initialState = {
     note: {},
     notes: [],
     tags: [],
+    folders: [],
 }
 
 const reducer = (state, action) => {
@@ -23,10 +31,33 @@ const reducer = (state, action) => {
                 ...state,
                 notes: payload,
             }
+        case UPDATE_NOTE_LIST:
+            return {
+                ...state,
+                notes: state.notes.map(i => {
+                    if (i.id === payload.note_id) {
+                        return {
+                            ...i,
+                            folder: payload,
+                        }
+                    }
+                    return i
+                }),
+            }
         case SET_TAG_LIST:
             return {
                 ...state,
                 tags: payload,
+            }
+        case SET_FOLDER_LIST:
+            return {
+                ...state,
+                folders: payload,
+            }
+        case ADD_FOLDER:
+            return {
+                ...state,
+                folders: [payload, ...state.folders],
             }
         default:
             return state

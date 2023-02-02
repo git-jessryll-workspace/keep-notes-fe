@@ -13,12 +13,6 @@ export default function TextEditor({ note }) {
     const [errors, setErrors] = useState([])
     const [debounceTimeout, setDebounceTimeout] = useState()
     const [updatedAt, setUpdatedAt] = useState()
-    const [tags, setTags] = useState([
-        {
-            label: 'test',
-            value: 'test',
-        },
-    ])
 
     const titleRef = useRef()
 

@@ -3,16 +3,20 @@ import { useState, Fragment, useContext, useEffect } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import {
     Bars3Icon,
-    FolderIcon,
     HomeIcon,
     XMarkIcon,
-    PlusCircleIcon,
     PlusIcon,
+    FolderPlusIcon,
+    ClipboardDocumentListIcon,
+    DocumentPlusIcon,
 } from '@heroicons/react/24/outline'
 import axios from '@/lib/axios'
 import { NoteContext } from '@/context/notes'
 import { SET_TAG_LIST } from '@/utils/constant'
 import { useNote } from '@/hooks/note'
+import { CircleStackIcon, FolderOpenIcon } from '@heroicons/react/20/solid'
+import CreateFolderModal from '../folders/CreateFolderModal'
+import FolderList from '../folders/FolderList'
 
 const navigation = [
     { name: 'Dashboard', href: '/dashboard', icon: HomeIcon, current: true },
@@ -27,6 +31,9 @@ const AppLayout = ({ header, children }) => {
     const { dispatch } = useContext(NoteContext)
     const { createNote } = useNote()
     const [sidebarOpen, setSidebarOpen] = useState(false)
+    const [showMenu, setShowMenu] = useState(false)
+    const [showCreateModal, setShowCreateModal] = useState(false)
+
     useEffect(() => {
         axios
             .get('/api/tags')
@@ -36,6 +43,10 @@ const AppLayout = ({ header, children }) => {
 
     return (
         <div>
+            <CreateFolderModal
+                openModal={showCreateModal}
+                setOpenModal={setShowCreateModal}
+            />
             <Transition.Root show={sidebarOpen} as={Fragment}>
                 <Dialog
                     as="div"
@@ -128,13 +139,7 @@ const AppLayout = ({ header, children }) => {
                                         href="#"
                                         className="group block flex-shrink-0">
                                         <div className="flex items-center">
-                                            <div>
-                                                <img
-                                                    className="inline-block h-10 w-10 rounded-full"
-                                                    src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                                                    alt=""
-                                                />
-                                            </div>
+                                            <div></div>
                                             <div className="ml-3">
                                                 <p className="text-base font-medium text-gray-700 group-hover:text-gray-900">
                                                     Tom Cook
@@ -191,6 +196,7 @@ const AppLayout = ({ header, children }) => {
                                     {item.name}
                                 </a>
                             ))}
+                            <FolderList />
                         </nav>
                     </div>
                     <div className="flex flex-shrink-0 border-t border-gray-200 p-4">
@@ -229,17 +235,42 @@ const AppLayout = ({ header, children }) => {
                     </button>
                 </div>
                 <main className="flex-1">{children}</main>
-                <div
-                    onClick={async () => {
-                        await createNote({
-                            title: 'New note',
-                            body: JSON.stringify({
-                                ops: [{ insert: 'Write your note' }],
-                            }),
-                        })
-                    }}
-                    className="absolute cursor-pointer bottom-6 md:bottom-10 p-1 border border-gray-300 hover:border-gray-600 right-6 md:right-10 z-10 bg-[#3949ab] rounded-full shadow-lg">
-                    <PlusIcon className="w-12 h-12 text-white hover:text-gray-600" />
+                <div>
+                    {showMenu && (
+                        <div className="w-[30%]">
+                            <button
+                                className={`text-gray-500 fixed z-90 bottom-[160px] right-8 duration-300 drop-shadow-lg hover:font-bold hover:drop-shadow-2xl cursor-pointer animate-fade-in flex items-center`}
+                                onClick={() => {
+                                    setShowCreateModal(true)
+                                    setShowMenu(false)
+                                }}>
+                                Create new folder
+                                <FolderPlusIcon className="h-12 w-12 p-2.5 ml-4 border border-gray-300 rounded-full shadow-lg bg-blue-600 hover:bg-blue-700 text-white" />
+                            </button>
+                            <button
+                                onClick={async () => {
+                                    await createNote({
+                                        title: 'New note',
+                                        body: JSON.stringify({
+                                            ops: [
+                                                { insert: 'Write your note' },
+                                            ],
+                                        }),
+                                    })
+                                }}
+                                className={`text-gray-500 fixed z-90 animate-fade-in bottom-[100px] right-8 duration-300 drop-shadow-lg hover:font-bold hover:drop-shadow-2xl cursor-pointer flex items-center`}>
+                                Create new note{' '}
+                                <DocumentPlusIcon className="h-12 w-12 p-2.5 ml-4 bg-blue-600 hover:bg-blue-700 rounded-full border border-gray-200 text-white" />
+                            </button>
+                        </div>
+                    )}
+                    <button
+                        onClick={() => setShowMenu(!showMenu)}
+                        className={`fixed z-90 bottom-10 right-8 bg-blue-600 w-12 h-12 rounded-full drop-shadow-lg flex justify-center items-center text-white text-4xl hover:bg-blue-700 hover:drop-shadow-2xl duration-300 ${
+                            showMenu && 'rotate-45'
+                        }`}>
+                        <PlusIcon className="w-6 h-6 text-white" />
+                    </button>
                 </div>
             </div>
         </div>
