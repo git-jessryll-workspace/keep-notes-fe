@@ -26,11 +26,13 @@ const EditNote = () => {
     )
     if (!note) return <div>Fetching data...</div>
     return (
-        <AppLayout>
+        <AppLayout disableSearch={true}>
             <Head>
                 <title>Keep-notes - {note.title}</title>
             </Head>
+            <div className="bg-white">
             <TextEditor note={note}/>
+            </div>
         </AppLayout>
     )
 }

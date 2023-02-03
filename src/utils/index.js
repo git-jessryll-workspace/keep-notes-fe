@@ -14,3 +14,6 @@ export const dateTimeFormat = date => {
         return date
     }
 }
+export function classNames(...classes) {
+    return classes.filter(Boolean).join(' ')
+}

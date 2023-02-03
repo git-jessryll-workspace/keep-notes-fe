@@ -4,10 +4,13 @@ import { useNote } from '@/hooks/note'
 import { NoteContext } from '@/context/notes'
 import { dateTimeFormat } from '@/utils'
 import SelectTags from '../SelectTags'
+import { XCircleIcon } from '@heroicons/react/24/outline'
+import { useRouter } from 'next/router'
 
 const SAVE_INTERVAL_MS = 2000
 
 export default function TextEditor({ note }) {
+    const router = useRouter()
     const { state } = useContext(NoteContext)
     const [quill, setQuill] = useState()
     const [errors, setErrors] = useState([])
@@ -39,6 +42,7 @@ export default function TextEditor({ note }) {
         quill.setContents(JSON.parse(note.body))
         quill.enable()
         setUpdatedAt(dateTimeFormat(note.updated_at))
+        console.log(quill.getContents());
     }, [note, quill])
 
     useEffect(() => {
@@ -46,6 +50,7 @@ export default function TextEditor({ note }) {
         clearTimeout(debounceTimeout)
         const handler = (delta, oldData, source) => {
             if (source !== 'user') return
+            
             setDebounceTimeout(() =>
                 setTimeout(() => {
                     updateNote({
@@ -85,6 +90,12 @@ export default function TextEditor({ note }) {
 
     return (
         <div className="pb-6 pt-2">
+            <XCircleIcon
+                className="w-10 lg:w-14 fixed -right-6 top-6 z-10 h-10 lg:h-14 cursor-pointer text-gray-400 hover:text-gray-500 -mt-4 mr-10"
+                onClick={() => {
+                    router.push('/dashboard')
+                }}
+            />
             <div className="px-4 pt-4">
                 <div>
                     <input
@@ -97,11 +108,7 @@ export default function TextEditor({ note }) {
                         Last update {updatedAt}
                     </div>
                     <div className="flex flex-start">
-                        <SelectTags
-                            onChange={e => console.log(e)}
-                            type="NOTE"
-                            primaryId={note?.id}
-                        />
+                        <SelectTags type="NOTE" primaryId={note?.id} />
                     </div>
                 </div>
             </div>

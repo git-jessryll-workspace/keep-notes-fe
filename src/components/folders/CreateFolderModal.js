@@ -82,7 +82,7 @@ const CreateFolderModal = ({ openModal, setOpenModal }) => {
                                         </button>
                                         <button
                                             onClick={handleCreateFolder}
-                                            className="bg-blue-600 hover:bg-blue-700 drop-shadow-lg hover:drop-shadow-2xl text-white px-3 py-1 rounded-md">
+                                            className="bg-[#44469a] drop-shadow-lg hover:drop-shadow-2xl text-white px-3 py-1 rounded-md">
                                             Create
                                         </button>
                                     </div>

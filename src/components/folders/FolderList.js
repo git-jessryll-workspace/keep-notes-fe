@@ -2,33 +2,45 @@ import { useContext, useEffect, useState } from 'react'
 import { CancelToken } from 'axios'
 import axios from '@/lib/axios'
 import { NoteContext } from '@/context/notes'
-import { SET_FOLDER_LIST } from '@/utils/constant'
+import {
+    SET_FOLDER_LIST,
+    SET_FOLDER_DATA,
+    UPDATE_NOTE_LIST,
+    SET_NAVIGATION_UPDATE,
+} from '@/utils/constant'
+import { FolderIcon } from '@heroicons/react/24/outline'
+import { useRouter } from 'next/router'
+import { GlobalContext } from '@/context/global'
 
 const FolderList = () => {
     const { state, dispatch } = useContext(NoteContext)
-    useEffect(() => {
-        let source = CancelToken.source()
-
-        axios.get('/api/folders').then(res =>
-            dispatch({
-                type: SET_FOLDER_LIST,
-                payload: res.data,
-            }),
-        )
-        return () => {
-            source.cancel()
-        }
-    }, [])
+    const { dispatch: globalDispatch } = useContext(GlobalContext)
+    const router = useRouter()
+    
     return (
         <>
-            <div className="ml-3.5 pt-6 flex items-center font-bold text-gray-700 pb-2.5">
-                <div className="rounded-full p-1.5 ml-0.5 bg-blue-500 mr-3"></div>
-                Folders
-            </div>
-            <div className='ml-[42px] space-y-0.5 text-sm'>
-                {
-                    state.folders.map((item, index) => <div key={index} className="font-bold text-gray-500 hover:text-gray-600 cursor-pointer">{item.name}</div>)
-                }
+            <div className="grid grid-cols-4 lg:grid-cols-8 gap-3">
+                {state.folders.map((item, index) => (
+                    <div
+                        key={index}
+                        className={`font-bold ${item.folder_notes.length === 0 ? "bg-[#f5f5f5] text-gray-500 hover:text-gray-600 hover:bg-gray-100" : "bg-[#44469a] text-white"} cursor-pointer p-1.5 rounded-lg shadow-md`}
+                        onClick={() => {
+                            dispatch({
+                                type: SET_FOLDER_DATA,
+                                payload: item,
+                            })
+                            globalDispatch({
+                                type: SET_NAVIGATION_UPDATE,
+                                payload: 'All notes',
+                            })
+                            router.push('/dashboard')
+                        }}>
+                        <div className="flex justify-center">
+                            <FolderIcon className="h-14 w-14" />
+                        </div>
+                        <div className="flex justify-center">{item.name}</div>
+                    </div>
+                ))}
             </div>
         </>
     )

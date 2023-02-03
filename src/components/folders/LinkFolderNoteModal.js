@@ -23,7 +23,6 @@ const LinkFolderNoteModal = ({
     useEffect(() => {
         setOpen(openModal)
     }, [openModal])
-    console.log(selectedFolder, 'selected folder')
     const addLinkAction = async () => {
         if (!selectedFolder) return
 
@@ -94,7 +93,6 @@ const LinkFolderNoteModal = ({
                                                 }),
                                             )}
                                             onChange={e => {
-                                                console.log(e, 'set')
                                                 setSelectedFolder(() => e)
                                             }}
                                             menuPortalTarget={document.body}
@@ -110,7 +108,7 @@ const LinkFolderNoteModal = ({
                                 <div className="flex justify-end pt-2">
                                     <div className="pt-2 flex items-center space-x-3">
                                         <button
-                                            className="font-bold text-gray-500 hover:text-gray-600"
+                                            className="font-bold text-gray-500 hover:text-gray-600 focus:outline-none"
                                             onClick={() => {
                                                 setOpen(false)
                                                 setOpenModal(false)
@@ -119,7 +117,7 @@ const LinkFolderNoteModal = ({
                                         </button>
                                         <button
                                             onClick={addLinkAction}
-                                            className="bg-blue-600 hover:bg-blue-700 drop-shadow-lg hover:drop-shadow-2xl text-white px-3 py-1 rounded-md">
+                                            className="bg-[#44469a] text-sm drop-shadow-lg hover:drop-shadow-2xl text-white px-3 py-1 rounded-md">
                                             Link Folder
                                         </button>
                                     </div>

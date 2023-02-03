@@ -5,6 +5,7 @@ import {
     SET_NOTE_LIST,
     SET_TAG_LIST,
     UPDATE_NOTE_LIST,
+    SET_FOLDER_DATA,
 } from '@/utils/constant'
 import { createContext, useReducer } from 'react'
 
@@ -15,6 +16,7 @@ const initialState = {
     notes: [],
     tags: [],
     folders: [],
+    folder: null,
 }
 
 const reducer = (state, action) => {
@@ -58,6 +60,11 @@ const reducer = (state, action) => {
             return {
                 ...state,
                 folders: [payload, ...state.folders],
+            }
+        case SET_FOLDER_DATA:
+            return {
+                ...state,
+                folder: payload,
             }
         default:
             return state

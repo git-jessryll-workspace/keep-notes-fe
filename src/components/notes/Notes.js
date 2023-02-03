@@ -17,10 +17,12 @@ const Notes = () => {
     const { error } = useSWR('/api/notes', () =>
         axios
             .get('/api/notes')
-            .then(res => dispatch({
-                type: SET_NOTE_LIST,
-                payload: res.data,
-            }))
+            .then(res =>
+                dispatch({
+                    type: SET_NOTE_LIST,
+                    payload: res.data,
+                }),
+            )
             .catch(error => {
                 if (error.response.status !== 409) throw error
 
@@ -40,6 +42,12 @@ const Notes = () => {
         )
     }
 
+    const queryFilter = () => {
+        if (!state.folder) return state.notes
+        return state.notes.filter(
+            item => item.folder?.folder_id === state.folder.id,
+        )
+    }
     return (
         <div className="space-y-3">
             {showLinkModal && (
@@ -50,20 +58,18 @@ const Notes = () => {
                     setSelectedNote={setSelectedNote}
                 />
             )}
-            <div>
-                <h1 className="font-bold text-2xl text-gray-600 flex items-center">
-                    Notes
-                </h1>
-            </div>
+            
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
                 {state.notes &&
-                    state.notes.map((item, index) => (
+                    queryFilter().map((item, index) => (
                         <div
-                            className="border border-gray-300 p-3 cursor-pointer shadow-sm rounded-md h-[112px]"
+                            className="border bg-[#f5f5f5] border-gray-300 p-3 shadow-sm rounded-xl h-[120px]"
                             key={index}>
                             <div className="flex justify-between">
                                 <div>
-                                    <FolderName folderId={item.folder?.folder_id} />
+                                    <FolderName
+                                        folderId={item.folder?.folder_id}
+                                    />
                                 </div>
                                 <div>
                                     <EllipsisHorizontalIcon
@@ -75,9 +81,9 @@ const Notes = () => {
                                     />
                                 </div>
                             </div>
-                            <div className={`${!item.folder && "-mt-6"}`}>
+                            <div className={`${!item.folder && '-mt-6'}`}>
                                 <a
-                                    className="font-bold text-sm cursor-pointer hover:border-b"
+                                    className="font-bold cursor-pointer hover:text-gray-900"
                                     onClick={() =>
                                         router.push(`/note/${item.id}`)
                                     }>

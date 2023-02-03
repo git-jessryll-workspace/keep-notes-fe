@@ -10,8 +10,12 @@ export const SET_NOTE_LIST = 'SET_NOTE_LIST'
 
 export const SET_TAG_LIST = 'SET_TAG_LIST'
 
-export const SET_FOLDER_LIST = 'SET_FOLDER_LIST';
+export const SET_FOLDER_LIST = 'SET_FOLDER_LIST'
 
-export const ADD_FOLDER = 'ADD_FOLDER';
+export const ADD_FOLDER = 'ADD_FOLDER'
 
-export const UPDATE_NOTE_LIST = 'UPDATE_NOTE_LIST';
+export const UPDATE_NOTE_LIST = 'UPDATE_NOTE_LIST'
+
+export const SET_FOLDER_DATA = 'SET_FOLDER_DATA'
+
+export const SET_NAVIGATION_UPDATE = 'SET_NAVIGATION_UPDATE'
