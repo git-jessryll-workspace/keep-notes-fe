@@ -50,10 +50,9 @@ export default function TextEditor({ note }) {
         clearTimeout(debounceTimeout)
         const handler = (delta, oldData, source) => {
             if (source !== 'user') return
-            
             setDebounceTimeout(() =>
-                setTimeout(() => {
-                    updateNote({
+                setTimeout(async () => {
+                    await updateNote({
                         setErrors,
                         title: titleRef.current.value,
                         body: JSON.stringify(quill.getContents()),

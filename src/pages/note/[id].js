@@ -19,7 +19,9 @@ const EditNote = () => {
                 .get(`/api/notes/${router.query.id}`)
                 .then(res => res.data)
                 .catch(error => {
-                    if (errorNote.response.status !== 409) throw error
+
+                    if (error.response.status === 401) return router.push('/dashboard')
+                    if (error.response.status !== 409) throw error
 
                     router.push('/dashboard')
                 }),

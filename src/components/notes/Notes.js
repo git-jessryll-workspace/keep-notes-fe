@@ -24,6 +24,7 @@ const Notes = () => {
                 }),
             )
             .catch(error => {
+                if (error.response.status === 401) return router.push('/login');
                 if (error.response.status !== 409) throw error
 
                 router.push('/login')
