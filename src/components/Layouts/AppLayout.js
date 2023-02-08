@@ -4,7 +4,7 @@ import { Dialog, Transition } from '@headlessui/react'
 import { CancelToken } from 'axios'
 import axios from '@/lib/axios'
 import { NoteContext } from '@/context/notes'
-import { SET_FOLDER_LIST, SET_TAG_LIST } from '@/utils/constant'
+import { SET_FAVORITE_LIST, SET_FOLDER_LIST, SET_TAG_LIST } from '@/utils/constant'
 import ToggleSidebarButton from '../ToggleSidebarButton'
 import CloseSidebarButton from '../CloseSidebarButton'
 import ProfileSidebar from '../ProfileSidebar'
@@ -36,6 +36,19 @@ const AppLayout = ({ children, disableSearch = false }) => {
         )
         return () => {
             source.cancel()
+        }
+    }, []);
+
+    useEffect(() => {
+        let source = CancelToken.source();
+        axios.get('/api/favorites').then(res => {
+            dispatch({
+                type: SET_FAVORITE_LIST,
+                payload: res.data
+            })
+        })
+        return () => {
+            source.cancel();
         }
     }, []);
     

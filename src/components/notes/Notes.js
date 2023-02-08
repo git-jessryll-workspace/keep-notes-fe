@@ -1,18 +1,23 @@
 import { NoteContext } from '@/context/notes'
+import { useNote } from '@/hooks/note'
 import axios from '@/lib/axios'
 import { dateTimeFormat } from '@/utils'
-import { SET_NOTE_LIST } from '@/utils/constant'
-import { FolderIcon } from '@heroicons/react/20/solid'
-import { EllipsisHorizontalIcon } from '@heroicons/react/24/outline'
+import { ADD_FAVORITE, DELETE_FAVORITE, SET_NOTE_LIST } from '@/utils/constant'
+import {
+    FolderIcon,
+    HeartIcon as HeartIconSolid,
+} from '@heroicons/react/20/solid'
+import { EllipsisHorizontalIcon, HeartIcon } from '@heroicons/react/24/outline'
 import { useRouter } from 'next/router'
 import { useContext, useState } from 'react'
 import useSWR from 'swr'
 import LinkFolderNoteModal from '../folders/LinkFolderNoteModal'
 
-const Notes = () => {
+const Notes = ({ filteredFavorites = false }) => {
     const [showLinkModal, setShowLinkModal] = useState(false)
     const [selectedNote, setSelectedNote] = useState(null)
     const { state, dispatch } = useContext(NoteContext)
+    const { addFavorite, deleteFavorite } = useNote()
     const router = useRouter()
     const { error } = useSWR('/api/notes', () =>
         axios
@@ -24,7 +29,7 @@ const Notes = () => {
                 }),
             )
             .catch(error => {
-                if (error.response.status === 401) return router.push('/login');
+                if (error.response.status === 401) return router.push('/login')
                 if (error.response.status !== 409) throw error
 
                 router.push('/login')
@@ -43,11 +48,70 @@ const Notes = () => {
         )
     }
 
-    const queryFilter = () => {
-        if (!state.folder) return state.notes
-        return state.notes.filter(
-            item => item.folder?.folder_id === state.folder.id,
+    const FavoriteComponent = ({ noteId }) => {
+        let favorite = state.favorites
+            .filter(item => item.favorable_id === noteId)
+            .filter(item => item.favorable_type === 'NOTE')
+
+        if (favorite.length !== 0) {
+            return (
+                <HeartIconSolid
+                    onClick={async () => {
+                        dispatch({
+                            type: DELETE_FAVORITE,
+                            payload: favorite[0].id,
+                        })
+                        let timeout = setTimeout(
+                            await deleteFavorite({ id: favorite[0].id }),
+                            2000,
+                        )
+                        clearTimeout(timeout)
+                    }}
+                    className="cursor-pointer"
+                />
+            )
+        }
+        return (
+            <HeartIcon
+                onClick={async () => {
+                    await addFavorite({
+                        favorable_id: noteId,
+                        favorable_type: 'NOTE',
+                    }).then(res => {
+                        dispatch({
+                            type: ADD_FAVORITE,
+                            payload: res.data,
+                        })
+                    })
+                }}
+                className="cursor-pointer"
+            />
         )
+    }
+
+    const queryFilter = () => {
+        if (!state.folder) {
+            if (!filteredFavorites) {
+                return state.notes
+            }
+            const favoriteNoteIds = state.favorites
+                .filter(item => item.favorable_type === 'NOTE')
+                .map(item => item.favorable_id)
+            return state.notes.filter(
+                item => favoriteNoteIds.indexOf(item.id) !== -1,
+            )
+        }
+        if (!filteredFavorites) {
+            return state.notes.filter(
+                item => item.folder?.folder_id === state.folder.id,
+            )
+        }
+        const favoriteNoteIds = state.favorites
+            .filter(item => item.favorable_type === 'NOTE')
+            .map(item => item.favorable_id)
+        return state.notes
+            .filter(item => favoriteNoteIds.indexOf(item.id) !== -1)
+            .filter(item => item?.folder?.folder_id === state.folder.id)
     }
     return (
         <div className="space-y-3">
@@ -59,7 +123,7 @@ const Notes = () => {
                     setSelectedNote={setSelectedNote}
                 />
             )}
-            
+
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
                 {state.notes &&
                     queryFilter().map((item, index) => (
@@ -72,7 +136,8 @@ const Notes = () => {
                                         folderId={item.folder?.folder_id}
                                     />
                                 </div>
-                                <div>
+                                <div className="flex space-x-2">
+                                    <FavoriteComponent noteId={item.id} />
                                     <EllipsisHorizontalIcon
                                         className="w-6 h-6 cursor-pointer"
                                         onClick={() => {

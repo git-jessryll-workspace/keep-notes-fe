@@ -6,6 +6,9 @@ import {
     SET_TAG_LIST,
     UPDATE_NOTE_LIST,
     SET_FOLDER_DATA,
+    SET_FAVORITE_LIST,
+    ADD_FAVORITE,
+    DELETE_FAVORITE,
 } from '@/utils/constant'
 import { createContext, useReducer } from 'react'
 
@@ -17,6 +20,7 @@ const initialState = {
     tags: [],
     folders: [],
     folder: null,
+    favorites: [],
 }
 
 const reducer = (state, action) => {
@@ -65,6 +69,21 @@ const reducer = (state, action) => {
             return {
                 ...state,
                 folder: payload,
+            }
+        case SET_FAVORITE_LIST:
+            return {
+                ...state,
+                favorites: payload,
+            }
+        case ADD_FAVORITE:
+            return {
+                ...state,
+                favorites: [...state.favorites, payload],
+            }
+        case DELETE_FAVORITE:
+            return {
+                ...state,
+                favorites: state.favorites.filter(i => i.id !== payload),
             }
         default:
             return state

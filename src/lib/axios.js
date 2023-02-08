@@ -8,7 +8,7 @@ const axios = Axios.create({
         'Access-Control-Max-Age': 86400,
         'Access-Control-Allow-Origin': "*",
         'Access-Control-Allow-Headers': 'Content-Type',
-        'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,DELETE,UPDATE',
+        'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,DELETE,UPDATE, PATCH',
         'Content-Type': 'application/json'
     },
     withCredentials: true,

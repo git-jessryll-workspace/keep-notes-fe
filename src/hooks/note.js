@@ -14,20 +14,20 @@ export const useNote = () => {
         
 
         await axios.post('/api/notes', props).then(res => {
-            dispatch({
-                type: SHOW_NOTIFICATION,
-                payload: {
-                    title: 'Successfully created note',
-                    message: '',
-                },
-            })
+            // dispatch({
+            //     type: SHOW_NOTIFICATION,
+            //     payload: {
+            //         title: 'Successfully created note',
+            //         message: '',
+            //     },
+            // })
             router.push(`/note/${res.data.id}`)
         })
     }
 
     const updateNote = async ({ setErrors, ...props }) => {
         setErrors([])
-        await axios.put(`/api/notes/${router.query.id}`, props).then(res => {
+        await axios.patch(`/api/notes/${router.query.id}`, props).then(res => {
             dispatchNote({
                 type: SET_NOTE_DATA,
                 payload: res.data,
@@ -59,8 +59,16 @@ export const useNote = () => {
         return await axios.post('/api/folder-notes', props);
     }
 
+    const addFavorite = async ({...props}) => {
+        return await axios.post('/api/favorites', props);
+    }
+
     const deleteFolderNote = async ({...props}) => {
         return await axios.delete(`/api/folder-notes/${props.id}`);
+    }
+
+    const deleteFavorite = async ({...props}) => {
+        return await axios.delete(`/api/favorites/${props.id}`)
     }
 
     return {
@@ -72,6 +80,8 @@ export const useNote = () => {
         updateFolder,
         deleteFolder,
         addFolderNote,
-        deleteFolder
+        deleteFolder,
+        addFavorite,
+        deleteFavorite
     }
 }
