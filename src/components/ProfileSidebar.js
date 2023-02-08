@@ -1,12 +1,14 @@
 import { useAuth } from "@/hooks/auth"
+import { useRouter } from "next/router"
 
 const ProfileSidebar = () => {
+    const router = useRouter()
     const { user } = useAuth({ middleware: 'auth' })
     return (
         <div className="flex flex-shrink-0 border-t border-gray-200 p-4">
             <a href="#" className="group block w-full flex-shrink-0">
                 <div className="flex items-center">
-                    <div className="ml-3">
+                    <div className="ml-3 cursor-pointer" onClick={() => router.push('/profile')}>
                         <p className="text-sm font-medium text-gray-700 group-hover:text-gray-900">
                             {user.name}
                         </p>

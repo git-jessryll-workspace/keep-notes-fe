@@ -23,7 +23,7 @@ const FolderList = () => {
                 {state.folders.map((item, index) => (
                     <div
                         key={index}
-                        className={`font-bold ${item.folder_notes.length === 0 ? "bg-[#f5f5f5] text-gray-500 hover:text-gray-600 hover:bg-gray-100" : "bg-[#44469a] text-white"} cursor-pointer p-1.5 rounded-lg shadow-md`}
+                        className={`font-bold ${item?.folder_notes?.length > 0 ?  "bg-[#44469a] text-white" : "bg-[#f5f5f5] text-gray-500 hover:text-gray-600 hover:bg-gray-100"} cursor-pointer p-1.5 rounded-lg shadow-md`}
                         onClick={() => {
                             dispatch({
                                 type: SET_FOLDER_DATA,

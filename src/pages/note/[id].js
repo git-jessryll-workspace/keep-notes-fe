@@ -1,16 +1,13 @@
 import AppLayout from '@/components/Layouts/AppLayout'
 import TextEditor from '@/components/notes/TextEditor'
-import { NoteContext } from '@/context/notes'
 import axios from '@/lib/axios'
-import { SET_NOTE_DATA } from '@/utils/constant'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
-import { useContext, useEffect } from 'react'
+import { useEffect } from 'react'
 import useSWR from 'swr'
 
 const EditNote = () => {
     const router = useRouter()
-    const { dispatch } = useContext(NoteContext)
     const { data: note, error } = useSWR(
         `/api/notes/${router.query.id}`,
         () =>
@@ -26,6 +23,14 @@ const EditNote = () => {
                     router.push('/dashboard')
                 }),
     )
+
+
+    useEffect(() => {
+        document.documentElement.style.setProperty('--bodyColor', 'white');
+        return () => {
+            document.documentElement.style.setProperty('--bodyColor', '#e9edf4')
+        }
+    }, []);
     if (!note) return <div>Fetching data...</div>
     return (
         <AppLayout disableSearch={true}>

@@ -1,6 +1,9 @@
+:root {
+    --bodyColor: #e9edf4;
+}
 
 body {
-  background-color: #e9edf4;
+  background-color: var(--bodyColor);
 }
 .animate-fade-in {
     opacity: 1;

@@ -4,18 +4,26 @@ import { Dialog, Transition } from '@headlessui/react'
 import { CancelToken } from 'axios'
 import axios from '@/lib/axios'
 import { NoteContext } from '@/context/notes'
-import { SET_FAVORITE_LIST, SET_FOLDER_LIST, SET_TAG_LIST } from '@/utils/constant'
+import {
+    SET_FAVORITE_LIST,
+    SET_FOLDER_LIST,
+    SET_TAG_LIST,
+} from '@/utils/constant'
 import ToggleSidebarButton from '../ToggleSidebarButton'
 import CloseSidebarButton from '../CloseSidebarButton'
 import ProfileSidebar from '../ProfileSidebar'
 import NavigationList from '../NavigationList'
 import GlobalSearchPanel from '../GlobalSearchPanel'
 import FabAction from '../FabAction'
+import {
+    MagnifyingGlassIcon,
+} from '@heroicons/react/24/outline'
 
 const AppLayout = ({ children, disableSearch = false }) => {
     const { user } = useAuth({ middleware: 'auth' })
     const { dispatch } = useContext(NoteContext)
     const [sidebarOpen, setSidebarOpen] = useState(false)
+    const [openSearch, setOpenSearch] = useState(false)
 
     useEffect(() => {
         let source = CancelToken.source()
@@ -37,21 +45,21 @@ const AppLayout = ({ children, disableSearch = false }) => {
         return () => {
             source.cancel()
         }
-    }, []);
+    }, [])
 
     useEffect(() => {
-        let source = CancelToken.source();
+        let source = CancelToken.source()
         axios.get('/api/favorites').then(res => {
             dispatch({
                 type: SET_FAVORITE_LIST,
-                payload: res.data
+                payload: res.data,
             })
         })
         return () => {
-            source.cancel();
+            source.cancel()
         }
-    }, []);
-    
+    }, [])
+
     if (!user) return
 
     return (
@@ -114,6 +122,14 @@ const AppLayout = ({ children, disableSearch = false }) => {
                 {/* Sidebar component, swap this element with another sidebar if you like */}
                 <div className="flex min-h-0 flex-1 flex-col border-r border-gray-200 bg-[#f5f5f5]">
                     <div className="flex flex-1 flex-col overflow-y-auto pt-5 pb-4">
+                        <div
+                            className="border border-gray-400 py-1.5 font-bold rounded-full px-3 mx-2.5 flex space-x-3 cursor-pointer items-center shadow-sm"
+                            onClick={() => setOpenSearch(!openSearch)}>
+                            <MagnifyingGlassIcon className="text-gray-500 w-6 h-6" />
+                            <div className="text-gray-500 text-sm">
+                                Search...
+                            </div>
+                        </div>
                         <NavigationList />
                     </div>
                     <ProfileSidebar />
@@ -121,7 +137,12 @@ const AppLayout = ({ children, disableSearch = false }) => {
             </div>
             <div className="flex flex-1 flex-col md:pl-64">
                 <ToggleSidebarButton setSidebarOpen={setSidebarOpen} />
-                {!disableSearch && <GlobalSearchPanel />}
+                {!disableSearch && (
+                    <GlobalSearchPanel
+                        openSearch={openSearch}
+                        setOpenSearch={setOpenSearch}
+                    />
+                )}
                 <main className="flex-1">{children}</main>
                 <FabAction />
             </div>

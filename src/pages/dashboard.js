@@ -2,6 +2,8 @@ import AppLayout from '@/components/Layouts/AppLayout'
 import Notes from '@/components/notes/Notes'
 import { NoteContext } from '@/context/notes'
 import { SET_FOLDER_DATA } from '@/utils/constant'
+import { PlusCircleIcon } from '@heroicons/react/20/solid'
+import { ClipboardIcon } from '@heroicons/react/24/outline'
 import { XMarkIcon } from '@heroicons/react/24/solid'
 import Head from 'next/head'
 import { useContext } from 'react'
@@ -43,7 +45,29 @@ const Dashboard = () => {
                         </h1>
                     )}
                 </div>
-                <Notes />
+                {state.notes.length === 0 ? (
+                    <div className="flex justify-center items-center h-[320px]">
+                        <div className="space-y-2">
+                            <div className="flex justify-center">
+                                <ClipboardIcon className="h-12 w-12" />
+                            </div>
+                            <div className="space-y-2.5">
+                                <h2 className="text-2xl text-center leading-3 font-bold">
+                                    No Note yet!
+                                </h2>
+                                <div>
+                                    <p className="w-full text-xs flex space-x-3 items-center">
+                                        There is no note available, click{' '}
+                                        <PlusCircleIcon className="text-[#44469a] h-6 w-6" />{' '}
+                                        to add new note
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                ) : (
+                    <Notes />
+                )}
             </div>
         </AppLayout>
     )

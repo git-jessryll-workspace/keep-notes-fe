@@ -14,7 +14,9 @@ const CreateFolderModal = ({ openModal, setOpenModal }) => {
         setOpen(openModal)
     }, [openModal])
 
-    const handleCreateFolder = async () => {
+    const handleCreateFolder = async (e) => {
+        e.preventDefault();
+        
         if (!inputRef.current?.value) return
         setOpen(false)
         setOpenModal(false)
@@ -62,12 +64,14 @@ const CreateFolderModal = ({ openModal, setOpenModal }) => {
                             leaveFrom="opacity-100 translate-y-0 sm:scale-100"
                             leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
                             <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-sm sm:p-6">
+                                <form onSubmit={handleCreateFolder}>
                                 <div className="space-y-1">
                                     <label>Folder Name</label>
                                     <input
                                         ref={inputRef}
                                         className="border border-gray-300 rounded-md w-full p-2"
                                         placeholder="Folder name..."
+                                        
                                     />
                                 </div>
                                 <div className="flex justify-end pt-2">
@@ -81,12 +85,13 @@ const CreateFolderModal = ({ openModal, setOpenModal }) => {
                                             Cancel
                                         </button>
                                         <button
-                                            onClick={handleCreateFolder}
+                                            type="submit"
                                             className="bg-[#44469a] drop-shadow-lg hover:drop-shadow-2xl text-white px-3 py-1 rounded-md">
                                             Create
                                         </button>
                                     </div>
                                 </div>
+                                </form>
                             </Dialog.Panel>
                         </Transition.Child>
                     </div>
