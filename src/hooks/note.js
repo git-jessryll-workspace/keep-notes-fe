@@ -1,38 +1,35 @@
 import { NotificationContext } from '@/context/global'
 import { NoteContext } from '@/context/notes'
 import axios from '@/lib/axios'
-import { SET_NOTE_DATA, SHOW_NOTIFICATION } from '@/utils/constant'
+import { DELETE_NOTE_LIST, SET_NOTE_DATA, SHOW_NOTIFICATION } from '@/utils/constant'
 import { useRouter } from 'next/router'
 import { useContext } from 'react'
 
 export const useNote = () => {
-    const { dispatch } = useContext(NotificationContext)
-    const { dispatch: dispatchNote } = useContext(NoteContext)
+    const { dispatch } = useContext(NoteContext)
     const router = useRouter()
 
     const createNote = async ({...props }) => {
-        
-
         await axios.post('/api/notes', props).then(res => {
-            // dispatch({
-            //     type: SHOW_NOTIFICATION,
-            //     payload: {
-            //         title: 'Successfully created note',
-            //         message: '',
-            //     },
-            // })
             router.push(`/note/${res.data.id}`)
         })
     }
 
-    const updateNote = async ({ setErrors, ...props }) => {
-        setErrors([])
-        await axios.patch(`/api/notes/${router.query.id}`, props).then(res => {
-            dispatchNote({
+    const updateNote = async ({ ...props }) => {
+        return await axios.patch(`/api/notes/${router.query.id}`, props).then(res => {
+            dispatch({
                 type: SET_NOTE_DATA,
                 payload: res.data,
             })
         })
+    }
+
+    const deleteNote = async ({...props}) => {
+        console.log(props)
+        return await axios.delete(`/api/notes/${props.id}`).then(() => dispatch({
+            type: DELETE_NOTE_LIST,
+            payload: props.id
+        }))
     }
 
     const addNoteTag = async ({ ...props }) => {
@@ -74,6 +71,7 @@ export const useNote = () => {
     return {
         createNote,
         updateNote,
+        deleteNote,
         addNoteTag,
         removeNoteTag,
         createFolder,

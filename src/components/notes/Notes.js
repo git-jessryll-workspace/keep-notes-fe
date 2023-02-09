@@ -7,34 +7,24 @@ import {
     FolderIcon,
     HeartIcon as HeartIconSolid,
 } from '@heroicons/react/20/solid'
-import { EllipsisHorizontalIcon, HeartIcon } from '@heroicons/react/24/outline'
+import {
+    ChevronDownIcon,
+    EllipsisVerticalIcon,
+    HeartIcon,
+} from '@heroicons/react/24/outline'
 import { useRouter } from 'next/router'
-import { useContext, useState } from 'react'
+import { Fragment, useContext, useState } from 'react'
 import useSWR from 'swr'
 import LinkFolderNoteModal from '../folders/LinkFolderNoteModal'
+import { Menu, Transition } from '@headlessui/react'
+import Dropdown from '../Dropdown'
 
 const Notes = ({ filteredFavorites = false }) => {
     const [showLinkModal, setShowLinkModal] = useState(false)
     const [selectedNote, setSelectedNote] = useState(null)
     const { state, dispatch } = useContext(NoteContext)
-    const { addFavorite, deleteFavorite } = useNote()
+    const { addFavorite, deleteFavorite, deleteNote } = useNote()
     const router = useRouter()
-    const { error } = useSWR('/api/notes', () =>
-        axios
-            .get('/api/notes')
-            .then(res =>
-                dispatch({
-                    type: SET_NOTE_LIST,
-                    payload: res.data,
-                }),
-            )
-            .catch(error => {
-                if (error.response.status === 401) return router.push('/login')
-                if (error.response.status !== 409) throw error
-
-                router.push('/login')
-            }),
-    )
 
     const FolderName = ({ folderId }) => {
         let folder = state.folders.filter(i => i.id === folderId)
@@ -52,7 +42,7 @@ const Notes = ({ filteredFavorites = false }) => {
         let favorite = state.favorites
             .filter(item => item.favorable_id === noteId)
             .filter(item => item.favorable_type === 'NOTE')
-
+        
         if (favorite.length !== 0) {
             return (
                 <HeartIconSolid
@@ -67,7 +57,7 @@ const Notes = ({ filteredFavorites = false }) => {
                         )
                         clearTimeout(timeout)
                     }}
-                    className="cursor-pointer"
+                    className="cursor-pointer w-6 h-6 text-[#44469a]"
                 />
             )
         }
@@ -84,7 +74,7 @@ const Notes = ({ filteredFavorites = false }) => {
                         })
                     })
                 }}
-                className="cursor-pointer"
+                className="cursor-pointer w-6 h-6"
             />
         )
     }
@@ -128,7 +118,7 @@ const Notes = ({ filteredFavorites = false }) => {
                 {state.notes &&
                     queryFilter().map((item, index) => (
                         <div
-                            className="border bg-[#f5f5f5] border-gray-300 p-3 shadow-sm rounded-xl h-[120px]"
+                            className="border bg-[#f5f5f5] select-none border-gray-300 p-3 shadow-sm rounded-xl h-[120px]"
                             key={index}>
                             <div className="flex justify-between">
                                 <div>
@@ -136,14 +126,137 @@ const Notes = ({ filteredFavorites = false }) => {
                                         folderId={item.folder?.folder_id}
                                     />
                                 </div>
-                                <div className="flex space-x-2">
+                                <div className="flex space-x-0.5">
                                     <FavoriteComponent noteId={item.id} />
-                                    <EllipsisHorizontalIcon
-                                        className="w-6 h-6 cursor-pointer"
-                                        onClick={() => {
-                                            setShowLinkModal(true)
-                                            setSelectedNote(item)
-                                        }}
+                                    <Dropdown
+                                        trigger={
+                                            <div>
+                                                <EllipsisVerticalIcon className="w-6 h-6 cursor-pointer" />
+                                            </div>
+                                        }
+                                        children={
+                                            <>
+                                                <div className="px-1 py-1 ">
+                                                    <Menu.Item>
+                                                        {({ active }) => (
+                                                            <button
+                                                                onClick={() => {
+                                                                    router.push(
+                                                                        `/note/${item.id}`,
+                                                                    )
+                                                                }}
+                                                                className={`${
+                                                                    active
+                                                                        ? 'bg-[#44469a] text-white'
+                                                                        : 'text-gray-900'
+                                                                } group flex w-full items-center rounded-md px-2 py-2 text-sm`}>
+                                                                {active ? (
+                                                                    <EditActiveIcon
+                                                                        className="mr-2 h-5 w-5"
+                                                                        aria-hidden="true"
+                                                                    />
+                                                                ) : (
+                                                                    <EditInactiveIcon
+                                                                        className="mr-2 h-5 w-5"
+                                                                        aria-hidden="true"
+                                                                    />
+                                                                )}
+                                                                Edit Note
+                                                            </button>
+                                                        )}
+                                                    </Menu.Item>
+                                                </div>
+                                                <div className="px-1 py-1 ">
+                                                    <Menu.Item>
+                                                        {({ active }) => (
+                                                            <button
+                                                                
+                                                                className={`${
+                                                                    active
+                                                                        ? 'bg-[#44469a] text-white'
+                                                                        : 'text-gray-900'
+                                                                } group flex w-full items-center rounded-md px-2 py-2 text-sm`}>
+                                                                {active ? (
+                                                                    
+                                                                    <HeartIcon
+                                                                        className="mr-2 h-5 w-5 text-white"
+                                                                        aria-hidden="true"
+                                                                    />
+                                                                ) : (
+                                                                    <HeartIcon
+                                                                        className="mr-2 h-5 w-5 text-[#44469a]"
+                                                                        aria-hidden="true"
+                                                                    />
+                                                                )}
+                                                                Favorate
+                                                            </button>
+                                                        )}
+                                                    </Menu.Item>
+                                                </div>
+                                                <div className="px-1 py-1">
+                                                    <Menu.Item>
+                                                        {({ active }) => (
+                                                            <button
+                                                                onClick={() => {
+                                                                    setShowLinkModal(
+                                                                        true,
+                                                                    )
+                                                                    setSelectedNote(
+                                                                        item,
+                                                                    )
+                                                                }}
+                                                                className={`${
+                                                                    active
+                                                                        ? 'bg-[#44469a] text-white'
+                                                                        : 'text-gray-900'
+                                                                } group flex w-full items-center rounded-md px-2 py-2 text-sm`}>
+                                                                {active ? (
+                                                                    <MoveActiveIcon
+                                                                        className="mr-2 h-5 w-5"
+                                                                        aria-hidden="true"
+                                                                    />
+                                                                ) : (
+                                                                    <MoveInactiveIcon
+                                                                        className="mr-2 h-5 w-5"
+                                                                        aria-hidden="true"
+                                                                    />
+                                                                )}
+                                                                Move Folder
+                                                            </button>
+                                                        )}
+                                                    </Menu.Item>
+                                                </div>
+                                                <div className="px-1 py-1">
+                                                    <Menu.Item>
+                                                        {({ active }) => (
+                                                            <button
+                                                            onClick={() => {
+                                                                let timeout = setTimeout(deleteNote({id: item.id}), 2000)
+                                                                clearTimeout(timeout)
+                                                            }}
+                                                                className={`${
+                                                                    active
+                                                                        ? 'bg-[#44469a] text-white'
+                                                                        : 'text-gray-900'
+                                                                } group flex w-full items-center rounded-md px-2 py-2 text-sm`}>
+                                                                {active ? (
+                                                                    <DeleteActiveIcon
+                                                                        className="mr-2 h-5 w-5 text-violet-400"
+                                                                        aria-hidden="true"
+                                                                    />
+                                                                ) : (
+                                                                    <DeleteInactiveIcon
+                                                                        className="mr-2 h-5 w-5 text-violet-400"
+                                                                        aria-hidden="true"
+                                                                    />
+                                                                )}
+                                                                Delete
+                                                            </button>
+                                                        )}
+                                                    </Menu.Item>
+                                                </div>
+                                            </>
+                                        }
                                     />
                                 </div>
                             </div>
@@ -176,5 +289,109 @@ const Notes = ({ filteredFavorites = false }) => {
         </div>
     )
 }
+function EditInactiveIcon(props) {
+    return (
+        <svg
+            {...props}
+            viewBox="0 0 20 20"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg">
+            <path
+                d="M4 13V16H7L16 7L13 4L4 13Z"
+                fill="white"
+                stroke="#44469a"
+                strokeWidth="2"
+            />
+        </svg>
+    )
+}
 
+function EditActiveIcon(props) {
+    return (
+        <svg
+            {...props}
+            viewBox="0 0 20 20"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg">
+            <path
+                d="M4 13V16H7L16 7L13 4L4 13Z"
+                fill="#44469a"
+                stroke="white"
+                strokeWidth="2"
+            />
+        </svg>
+    )
+}
+
+function MoveInactiveIcon(props) {
+    return (
+        <svg
+            {...props}
+            viewBox="0 0 20 20"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg">
+            <path d="M10 4H16V10" stroke="#44469a" strokeWidth="2" />
+            <path d="M16 4L8 12" stroke="#44469a" strokeWidth="2" />
+            <path d="M8 6H4V16H14V12" stroke="#44469a" strokeWidth="2" />
+        </svg>
+    )
+}
+
+function MoveActiveIcon(props) {
+    return (
+        <svg
+            {...props}
+            viewBox="0 0 20 20"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg">
+            <path d="M10 4H16V10" stroke="white" strokeWidth="2" />
+            <path d="M16 4L8 12" stroke="white" strokeWidth="2" />
+            <path d="M8 6H4V16H14V12" stroke="white" strokeWidth="2" />
+        </svg>
+    )
+}
+
+function DeleteInactiveIcon(props) {
+    return (
+        <svg
+            {...props}
+            viewBox="0 0 20 20"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg">
+            <rect
+                x="5"
+                y="6"
+                width="10"
+                height="10"
+                fill="white"
+                stroke="#44469a"
+                strokeWidth="2"
+            />
+            <path d="M3 6H17" stroke="#44469a" strokeWidth="2" />
+            <path d="M8 6V4H12V6" stroke="#44469a" strokeWidth="2" />
+        </svg>
+    )
+}
+
+function DeleteActiveIcon(props) {
+    return (
+        <svg
+            {...props}
+            viewBox="0 0 20 20"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg">
+            <rect
+                x="5"
+                y="6"
+                width="10"
+                height="10"
+                fill="#44469a"
+                stroke="white"
+                strokeWidth="2"
+            />
+            <path d="M3 6H17" stroke="white" strokeWidth="2" />
+            <path d="M8 6V4H12V6" stroke="white" strokeWidth="2" />
+        </svg>
+    )
+}
 export default Notes

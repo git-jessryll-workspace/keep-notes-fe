@@ -10,6 +10,7 @@ import { useContext } from 'react'
 
 const Dashboard = () => {
     const { state, dispatch } = useContext(NoteContext)
+
     return (
         <AppLayout>
             <Head>

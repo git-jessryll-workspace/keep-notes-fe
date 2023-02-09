@@ -7,6 +7,7 @@ import { NoteContext } from '@/context/notes'
 import {
     SET_FAVORITE_LIST,
     SET_FOLDER_LIST,
+    SET_NOTE_LIST,
     SET_TAG_LIST,
 } from '@/utils/constant'
 import ToggleSidebarButton from '../ToggleSidebarButton'
@@ -15,9 +16,7 @@ import ProfileSidebar from '../ProfileSidebar'
 import NavigationList from '../NavigationList'
 import GlobalSearchPanel from '../GlobalSearchPanel'
 import FabAction from '../FabAction'
-import {
-    MagnifyingGlassIcon,
-} from '@heroicons/react/24/outline'
+import { MagnifyingGlassIcon } from '@heroicons/react/24/outline'
 
 const AppLayout = ({ children, disableSearch = false }) => {
     const { user } = useAuth({ middleware: 'auth' })
@@ -55,6 +54,27 @@ const AppLayout = ({ children, disableSearch = false }) => {
                 payload: res.data,
             })
         })
+        return () => {
+            source.cancel()
+        }
+    }, [])
+
+    useEffect(() => {
+        let source = CancelToken.source()
+        axios
+            .get('/api/notes')
+            .then(res =>
+                dispatch({
+                    type: SET_NOTE_LIST,
+                    payload: res.data,
+                }),
+            )
+            .catch(error => {
+                if (error.response.status === 401) return router.push('/login')
+                if (error.response.status !== 409) throw error
+
+                router.push('/login')
+            })
         return () => {
             source.cancel()
         }

@@ -9,6 +9,7 @@ import {
     SET_FAVORITE_LIST,
     ADD_FAVORITE,
     DELETE_FAVORITE,
+    DELETE_NOTE_LIST,
 } from '@/utils/constant'
 import { createContext, useReducer } from 'react'
 
@@ -49,6 +50,11 @@ const reducer = (state, action) => {
                     }
                     return i
                 }),
+            }
+        case DELETE_NOTE_LIST:
+            return {
+                ...state,
+                notes: state.notes.filter(i => i.id !== payload),
             }
         case SET_TAG_LIST:
             return {
